@@ -1,4 +1,20 @@
-def traitementtextuel (iter):
+from tkinter import *
+from functools import partial
+
+def action_boutonOK(wentry,wlabel):
+    chemin=wentry.get()
+    texteprovisoire='bonjour je vais à la maison'
+    wlabel.config(text=texteprovisoire)
+    
+
+    
+def calculglobal (wlabel,texte):
+    nbcaracteres=len(texte)
+    resultat=f'Le nombre de caractères est {nbcaracteres}.'
+    wlabel.config(text=resultat)
+    
+
+def traitementtextuel (wlabel,iter):
     """
         Reçoit un itérable
         Crée un dictionnaire (clé=item de l'itérable ; valeur=liste(nboccurences;fréquence)
@@ -18,9 +34,11 @@ def traitementtextuel (iter):
         dicoiters[char][0]=dicoiters[char][0]+1
         dicoiters[char][1]=dicoiters[char][0]/longueuriter*100
     listetriee= sorted(dicoiters.items(), key=lambda x: x[1][0], reverse=True)
-
+    
+    resultats=''
     for tuple in listetriee :
-        print(f"{tuple[0]:^3}  Nombre d\'occurences = {tuple[1][0]} et fréquence = {tuple[1][1]:>.2f} %")
+        resultats=resultats+f"{tuple[0]:^3} Nombre d\'occurences = {tuple[1][0]} et fréquence = {tuple[1][1]:>.2f} %\n"
+    wlabel.config(text=resultats)
 
 def formatage_mots(chaine):
     chaine0 = chaine[0]
@@ -46,16 +64,44 @@ def formatage_mots(chaine):
         liste_mots.remove("")
     return liste_mots
 
-def traitementmots (chaine):
+def traitementmots (wlabel,chaine):
     """
         Reçoit un texte
         Appel à la fonction traitementtextuel
     """
     listemots = formatage_mots(chaine)
-    traitementtextuel(listemots)
+    traitementtextuel(wlabel,listemots)
     
  #Programme principal   
-texte='bonjour, vous allez bien ?'
-traitementtextuel(texte)
-print()
-traitementmots(texte)
+Fenetre=Tk()
+Fenetre.title('Analyse textuelle')
+
+cheminsaisi=StringVar(Fenetre)
+cheminsaisi.set('Entrez le chemin du fichier ici puis cliquez sur le bouton OK')
+inputchemin=Entry(Fenetre, textvariable=cheminsaisi, width=100, bd=10, justify='center')
+inputchemin.grid(row=0, column=0,columnspan=2)
+
+textefichier=Label(Fenetre, text='')
+textefichier.grid(row=1, column=0, columnspan=3)
+
+boutonchemin = Button(Fenetre, text='OK', command=partial(action_boutonOK, inputchemin, textefichier))
+boutonchemin.grid(row=0, column=2)
+
+
+
+labelaction0=Label(Fenetre,text='')
+boutonaction0=Button(Fenetre, text='Calculs globaux', command=partial(calculglobal,labelaction0,'bonjour, ça va ?'))
+labelaction1=Label(Fenetre,text='')
+boutonaction1=Button(Fenetre, text='Nb d\'occurences et fréquences des caractères', command=partial(traitementtextuel,labelaction1,'bonjour, ça va ?'))
+labelaction2=Label(Fenetre,text='')
+boutonaction2=Button(Fenetre, text='Nb d\'occurences et fréquences des mots', command=partial(traitementmots,labelaction2,'bonjour, ça va ?'))
+
+boutonaction0.grid(row=2, column=0)  
+boutonaction1.grid(row=2, column=1)
+boutonaction2.grid(row=2, column=2)
+labelaction0.grid(row=3,column=0)
+labelaction1.grid(row=3,column=1)
+labelaction2.grid(row=3,column=2) 
+    
+
+Fenetre.mainloop()
