@@ -10,7 +10,7 @@ def action_boutonOK(wentry,wlabel):
     
 def calculglobal (wlabel,texte):
     nbcaracteres=len(texte)
-    resultat=f'Le nombre de caractères est {nbcaracteres}.'
+    resultat=f'Le nombre total de caractères est {nbcaracteres}.'
     wlabel.config(text=resultat)
     
 
