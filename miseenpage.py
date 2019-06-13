@@ -1,6 +1,6 @@
-#import analysetexte
+# coding: utf-8
+
 import os
-import tkinter
 from tkinter import *
 from functools import partial
 
@@ -11,15 +11,46 @@ global saisie_nom_fichier
 global contenu_fichier
 global liste_mots
 
+
+
+def lecture_fichier(nom_fichier) :
+    fichier = open(nom_fichier, "r")
+    contenu_fichier = fichier.read()
+    fichier.close()
+    
+    while contenu_fichier[len(contenu_fichier)-1] == (" " or "\n"):
+        contenu_fichier = contenu_fichier[:len(contenu_fichier)-1]
+    
+
+    
+
+    return contenu_fichier 
+    
+
+def is_fichier ():
+    
+    
+    nom_fichier = saisie_nom_fichier.get()
+    if os.path.isfile(nom_fichier) :
+        contenu_initial = lecture_fichier(nom_fichier)
+        contenu = Label(top, text=contenu_initial, justify="left")
+    else:
+        # chemin fichier incorrect
+        contenu = Label(top, padx=10, pady=5, text="Fichier inexistant")
+    contenu.grid(column=0, row=1, columnspan=2)
+    
+
 def formatage_mots(chaine):
 
     global liste_mots
     
-    chaine0 = chaine[0]
+    # Remplacement de fins de ligne par des espaces
+    contenu_sansretour = chaine.replace("\n"," ")
+    chaine0 = contenu_sansretour[0]
 
     # Les caractères de ponctuation sont remplacés par des espaces
     ponctuation = ["'",'"',",",";",".","!","?","{","}","[","]","(",")"]
-    for car in chaine[1:]:
+    for car in contenu_sansretour[1:]:
         if car not in ponctuation :
             chaine0 += car
         else :
@@ -38,48 +69,14 @@ def formatage_mots(chaine):
         liste_mots.remove("")
     return liste_mots
 
-def lecture_fichier(nom_fichier) :
-    #Ouverture du fichier
-    fichier = open(nom_fichier, "r")
-    #Lecture du fichier avec remplacement de passage à la ligne par des espace
-    texte = fichier.read()
-    #Comptage du nombre de retour à la ligne
-    nb_lignes = texte.count("\n")
-    # Remplacement de fins de ligne par des espaces
-#    texte = texte.replace("\n"," ")
-    # Fermeture du fichier
-    fichier.close()
 
-    while texte[len(texte)-1] == " ":
-        texte = texte[:len(texte)-1]
-
-    # Génération de la liste des mots
-    listemots = formatage_mots(contenu_fichier)
+def calculglobal (contenu,wlabel):  
     
-    return texte, nb_lignes
-
-def is_fichier ():
-    global nb_lignes
-    global saisie_nom_fichier
-    global contenu_fichier
     
-    nom_fichier = saisie_nom_fichier.get()
-    if os.path.isfile(nom_fichier) :
-        contenu_fichier, nb_lignes = lecture_fichier(nom_fichier)
-        contenu = Label(top, text=contenu_fichier, justify="left")
-    else:
-        # Etiquette fichier absent
-        contenu = Label(top, padx=10, pady=5, text="Fichier inexistant")
-    contenu.grid(column=0, row=1, columnspan=2)
-
-def calculglobal (wlabel):
-
-    global contenu_fichier
-    global nb_lignes
-    global liste_mots
-    
-    nbcaracteres=len(contenu_fichier)
-    nb_mots = len(liste_mots)
+    nbcaracteres=len(contenu)
+    nb_lignes= contenu.count("\n")
+    listemots=formatage_mots(contenu)
+    nb_mots = len(listemots)
     resultat=f'Le nombre total de caractères est {nbcaracteres}.\nLe nombre total de ligne est {nb_lignes}.\n'
     resultat+=f'Le nombre total de mot est {nb_mots}.'
     wlabel.config(text=resultat)
@@ -117,29 +114,27 @@ def traitementtextuel (wlabel, option):
     listetriee= sorted(dicoiters.items(), key=lambda x: x[1][0], reverse=True)
     
     resultats=''
-    for tuple in listetriee :
-        resultats=resultats+f"'{tuple[0]}'\t Nombre d\'occurences = {tuple[1][0]} et fréquence = {tuple[1][1]:>.2f} %\n"
+    for tuples in listetriee :
+        resultats=resultats+f"{(longmaxitem-len(tuples[0]))*'  '}'{tuples[0]}' Nombre d\'occurences = {tuples[1][0]} et fréquence = {tuples[1][1]:>.2f} %\n"
     wlabel.config(text=resultats)
 
-def traitementmots (wlabel):
+def traitementmots (contenu_fichier,wlabel):
 
     """
         Reçoit un texte
         Appel à la fonction traitementtextuel
     """
-    global contenu_fichier
     
     listemots = formatage_mots(contenu_fichier)
     traitementtextuel(wlabel,1)
     
     
 # Création de la fenêtre tkinter
-top = tkinter.Tk()
+top = Tk()
 top.geometry("1000x1000")
 top.title("Analyse d'un fichier texte")
 
-#Initialisation de variables
-contenu_fichier = "Bonjour, comment  ça va ?"
+
 
 # Création des widgets pour saisir le nom du fichier
 
@@ -165,7 +160,7 @@ contenu.grid(column=0,row=1,columnspan=2)
 
 #création des widgets d'action
 labelaction0=Label(top,text='',justify='left', anchor='nw')
-boutonaction0=Button(top, text='Calculs globaux', command=partial(calculglobal,labelaction0))
+boutonaction0=Button(top, text='Calculs globaux', command=partial(calculglobal,contenu_fichier,labelaction0))
 labelaction1=Label(top,text='',justify='left', anchor='nw')
 boutonaction1=Button(top, text='Nb d\'occurences et fréquences des caractères', command=partial(traitementtextuel,labelaction1,0))
 labelaction2=Label(top,text='',justify='left', anchor='nw')

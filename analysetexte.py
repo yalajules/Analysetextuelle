@@ -1,8 +1,11 @@
+# coding: utf-8
+
 from tkinter import *
 from functools import partial
 
 def action_boutonOK(wentry,wlabel):
     chemin=wentry.get()
+    inputchemin.selection_clear()
     texteprovisoire='bonjour je vais à la maison'
     wlabel.config(text=texteprovisoire)
     
@@ -37,8 +40,8 @@ def traitementtextuel (wlabel,chaine):
     listetriee= sorted(dicochaines.items(), key=lambda x: x[1][0], reverse=True)
     
     resultats=''
-    for tuple in listetriee :
-        resultats=resultats+f"'{tuple[0]:>{Longueurchaine}}' Nombre d\'occurences = {tuple[1][0]} et fréquence = {tuple[1][1]:<.2f} %\n"
+    for tuples in listetriee :
+        resultats=resultats+f"{(longmaxitem-len(tuples[0]))*'  '}'{tuples[0]}' Nombre d\'occurences = {tuples[1][0]} et fréquence = {tuples[1][1]:>.2f} %\n"
     wlabel.config(text=resultats)
 
 def formatage_mots(chaine):
