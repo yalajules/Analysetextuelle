@@ -14,30 +14,31 @@ def calculglobal (wlabel,texte):
     wlabel.config(text=resultat)
     
 
-def traitementtextuel (wlabel,iter):
+def traitementtextuel (wlabel,chaine):
     """
         Reçoit un itérable
         Crée un dictionnaire (clé=item de l'itérable ; valeur=liste(nboccurences;fréquence)
         Affiche par ordre décroissant d'occurences les items du dictonnaire convertit préalablement en liste
+        dans un widget label
     """
     longmaxitem=0
-    for k in iter :
+    for k in chaine :
         if len(k) > longmaxitem :
             longmaxitem=len(k)
 
-    longueuriter=len(iter)
+    longueurchaine=len(chaine)
     
-    dicoiters={}
-    for char in iter : #dico[0]=nb occurences ; dico[1]=fréquences
-        dicoiters[char]=[0,0]
-    for char in iter :
-        dicoiters[char][0]=dicoiters[char][0]+1
-        dicoiters[char][1]=dicoiters[char][0]/longueuriter*100
-    listetriee= sorted(dicoiters.items(), key=lambda x: x[1][0], reverse=True)
+    dicochaines={}
+    for char in chaine : #dico[0]=nb occurences ; dico[1]=fréquences
+        dicochaines[char]=[0,0]
+    for char in chaine :
+        dicochaines[char][0]=dicochaines[char][0]+1
+        dicochaines[char][1]=dicochaines[char][0]/longueurchaine*100
+    listetriee= sorted(dicochaines.items(), key=lambda x: x[1][0], reverse=True)
     
     resultats=''
     for tuple in listetriee :
-        resultats=resultats+f"{tuple[0]:^3} Nombre d\'occurences = {tuple[1][0]} et fréquence = {tuple[1][1]:>.2f} %\n"
+        resultats=resultats+f"'{tuple[0]:>{Longueurchaine}}' Nombre d\'occurences = {tuple[1][0]} et fréquence = {tuple[1][1]:<.2f} %\n"
     wlabel.config(text=resultats)
 
 def formatage_mots(chaine):
@@ -72,13 +73,15 @@ def traitementmots (wlabel,chaine):
     listemots = formatage_mots(chaine)
     traitementtextuel(wlabel,listemots)
     
- #Programme principal   
+     #Programme principal   
 Fenetre=Tk()
 Fenetre.title('Analyse textuelle')
 
+    #création des widgets d'entrée et bouton OK et du texte du fichier
 cheminsaisi=StringVar(Fenetre)
 cheminsaisi.set('Entrez le chemin du fichier ici puis cliquez sur le bouton OK')
 inputchemin=Entry(Fenetre, textvariable=cheminsaisi, width=100, bd=10, justify='center')
+inputchemin.focus_set()
 inputchemin.grid(row=0, column=0,columnspan=2)
 
 textefichier=Label(Fenetre, text='')
@@ -88,7 +91,7 @@ boutonchemin = Button(Fenetre, text='OK', command=partial(action_boutonOK, input
 boutonchemin.grid(row=0, column=2)
 
 
-
+    #création des widgets d'action
 labelaction0=Label(Fenetre,text='')
 boutonaction0=Button(Fenetre, text='Calculs globaux', command=partial(calculglobal,labelaction0,'bonjour, ça va ?'))
 labelaction1=Label(Fenetre,text='')
